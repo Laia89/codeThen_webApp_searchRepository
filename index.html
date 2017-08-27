@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>SearchGitHubRepo</title>
+
+    <link rel="stylesheet" href="../webApp_searchRepository/css/style.css">
+
+  </head>
+
+  <body>
+
+    <h1>Search for your repository in GitHub</h1>
+
+    <p>
+      You can search for a repository with a specific word.
+    </p>
+
+    <div>
+
+      <h2>Look for a repository</h2>
+
+      <div class="result">
+        <p><input id="searchRepoInput"><button id="searchRepoBtn">Search on GitHub</button><span></span></p>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>#id</th>
+              <th>Name</th>
+              <th>URL</th>
+              <th>Owner</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="js/SearchRepository.js"></script>
+
+  </body>
+</html>
