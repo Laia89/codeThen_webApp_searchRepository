@@ -1,35 +1,41 @@
 
+$('.nextPrev a').off('click').on('click', function() {
+  var url = $(this).data();
+  getDataFromUrl(url);
+})
+
 $('#searchRepoBtn, .result input[name="order"]').off('click').on('click', function() {
   const searchTerm = $('#searchRepoInput').val();
   if (searchTerm) {
     const order = $('.result input[name="order"]:checked').val();
     //$.when(getRepoData(searchTerm, order)).then((data) => fillTable(data));
-    initProces(searchTerm, order);
+    const githubReposUrl = 'https://api.github.com/search/repositories';
+    const url = githubReposUrl + '?q=' + searchTerm + '&per_page=20&order=' + order;
+    getDataFromUrl(url);
   }
 })
 
-function initProces(searchTerm, order) {
-  const githubReposUrl = 'https://api.github.com/search/repositories';
-  const url = githubReposUrl + '?q=' + searchTerm + '&per_page=10&order=' + order;
 
-  $.when(getRepoData(url))
-    .then(( data ) => {
-      const result = `Found ${data.total_count} repositories about ${searchTerm}`;
+function getDataFromUrl(url) {
+  $.when(doAjaxCall(url))
+    .then(( xhr ) => {
+      const data = JSON.parse(xhr.responseText); // converts response to JSON object
+      const result = `Found ${data.total_count} repositories about ${$('#searchRepoInput').val()}`;
       $('.result span').text(result);
+      setUrlInBtn(xhr.getResponseHeader('Link'));
       fillTable(data);
     },
     ( status ) => $('.result span').text(`There was an error: ${status}`));
   $('.result span').text("sending request with XMLHttpRequest...");
 };
 
-function getRepoData(url) {
+function doAjaxCall(url) {
   var $deferred = $.Deferred();
   const xhr = new XMLHttpRequest();
   xhr.open("GET", url);
   xhr.onload = () => {
     console.log("AJAX request finished correctly :)");
-    const data = JSON.parse(xhr.responseText); // converts response to JSON object
-    $deferred.resolve(data);
+    $deferred.resolve(xhr);
   };
   xhr.onerror = () => {
     console.log("AJAX request finished with an error :(");
@@ -39,6 +45,21 @@ function getRepoData(url) {
   return $deferred.promise();
 };
 
+//xhr.getResponseHeader('Link') -->null (troba 1, 1 pag) , afsda
+
+function setUrlInBtn(headerLink) {
+  const headersLink = headerLink.split(', ');
+  $.each(headersLink, function(i, header) {
+    var start_pos = header.indexOf('<') + 1;
+    var end_pos = header.indexOf('>',start_pos);
+    var url = header.substring(start_pos,end_pos);
+    if (header.includes('next')) {
+      $('a.next').attr('data-url', url);
+    } else if (header.includes('prev')) {
+      $('a.previous').attr('data-url', url);
+    }
+  });
+}
 
 function fillTable(data) {
   var htmlRow = '';
