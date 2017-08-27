@@ -1,15 +1,17 @@
 
-$('#searchRepoBtn').off('click').on('click', function() {
-  $.when(getRepoData()).then((data) => fillTable(data));
+$('#searchRepoBtn, .result input[name="order"]').off('click').on('click', function() {
+  const searchTerm = $('#searchRepoInput').val();
+  if (searchTerm) {
+    const order = $('.result input[name="order"]:checked').val();
+    $.when(getRepoData(searchTerm, order)).then((data) => fillTable(data));
+  }
 })
 
-
 // AJAX example (using XMLHttpRequest class)
-function getRepoData() {
+function getRepoData(searchTerm, order) {
   var $deferred = $.Deferred();
   const githubReposUrl = 'https://api.github.com/search/repositories';
-  const searchTerm = $('#searchRepoInput').val();
-  const url = githubReposUrl + '?q=' + searchTerm + '&per_page=20';
+  const url = githubReposUrl + '?q=' + searchTerm + '&per_page=20&order=' + order;
   const xhr = new XMLHttpRequest();
   xhr.open("GET", url);
   xhr.onload = () => {
